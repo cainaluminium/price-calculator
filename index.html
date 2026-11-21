@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#e5e7eb">
+
+<!-- Tetapan Khas iOS Web App (iPhone 14 Pro) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cain Price Calc">
+
+<!-- Ikon App & Logo Banner: Letak fail 'logo.png' dalam folder yang sama -->
+<link rel="apple-touch-icon" href="logo.PNG">
+
+<title>Cain Aluminium — Price Calculator</title>
+<style>
+:root{--ink:#17212b;--muted:#667085;--line:#e3e7eb;--bg:#f4f6f8;--red:#b42318;--white:#fff;--banner:#e5e7eb}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 calc(28px + env(safe-area-inset-bottom))}
+header{background:var(--banner);color:var(--ink);padding:20px 18px 18px;border-bottom:1px solid #d1d5db}
+.header-inner{max-width:720px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
+header .brand{font-size:12px;letter-spacing:2px;font-weight:800;color:var(--red)}
+header h1{font-size:22px;margin:5px 0 3px;color:var(--ink)}
+header p{font-size:13px;color:#4b5563;margin:0}
+.header-logo{width:54px;height:54px;border-radius:12px;object-fit:contain;background:#fff;border:1px solid #d1d5db;padding:4px;flex-shrink:0}
+main{max-width:720px;margin:auto;padding:14px 13px 36px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 13px;box-shadow:0 2px 8px #1018280a}
+h2{font-size:16px;margin:0 0 13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.field{min-width:0}
+label{display:block;font-size:12px;font-weight:700;color:#475467;margin:0 0 6px}
+input,select{width:100%;min-height:45px;border:1px solid #d0d5dd;border-radius:10px;padding:10px 11px;font-size:16px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus{border-color:#344054;box-shadow:0 0 0 3px #34405418}
+.unit{font-size:11px;color:var(--muted);font-weight:500}
+.full{grid-column:1/-1}
+.measure{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.measure .field label{font-size:11px}
+.acc-head{display:grid;grid-template-columns:1.5fr .65fr 1fr 34px;gap:7px;margin-bottom:6px}
+.acc-head span{font-size:11px;font-weight:700;color:#475467}
+.acc-row{display:grid;grid-template-columns:1.5fr .65fr 1fr 34px;gap:7px;align-items:center;margin-bottom:8px}
+.acc-row input{min-height:42px;padding:8px 9px;font-size:15px}
+.acc-row input.num{text-align:right}
+.del-btn{border:0;background:#fee4e2;color:#b42318;border-radius:9px;height:42px;width:34px;padding:0;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.add-item-btn{width:100%;border:1px dashed #98a2b3;background:#f8f9fb;color:var(--ink);border-radius:11px;min-height:44px;padding:10px;font-size:14px;font-weight:750;margin-top:4px}
+.add-item-btn:active{background:#eef1f4}
+.smallnote{font-size:11px;line-height:1.45;color:var(--muted);margin:10px 0 0}
+.ratebox{background:#f8f9fb;border-radius:11px;padding:12px;margin-top:10px}
+.ratebox label{margin-bottom:8px}
+.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{border:1px solid var(--line);border-radius:12px;padding:13px}
+.result .name{font-size:12px;color:var(--muted);font-weight:700}
+.result .price{font-size:21px;font-weight:800;margin-top:5px;letter-spacing:-.5px}
+.result .desc{font-size:10px;color:var(--muted);margin-top:4px}
+.total-label{font-size:12px;color:var(--muted);font-weight:700}
+button{border:0;border-radius:12px;min-height:48px;padding:12px 15px;font-size:15px;font-weight:750;cursor:pointer;touch-action:manipulation}
+.primary{background:var(--ink);color:white;width:100%}
+.secondary{background:#eef1f4;color:var(--ink);width:100%}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 10px 20px}
+@media(max-width:370px){.grid{gap:8px}.card{padding:13px}.result .price{font-size:18px}.acc-head,.acc-row{grid-template-columns:1.35fr .6fr .95fr 30px;gap:5px}.del-btn{width:30px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="brand">CAIN ALUMINIUM</div>
+      <h1>Cabinet Price Calculator</h1>
+      <p>Kalkulator anggaran harga kabinet dapur</p>
+    </div>
+    <img src="logo.PNG" alt="Logo Cain Aluminium" class="header-logo" onerror="this.style.display='none'">
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h2>Maklumat pelanggan <span class="unit">(pilihan)</span></h2>
+    <div class="grid">
+      <div class="field"><label>Nama pelanggan</label><input id="customer" placeholder="Nama"></div>
+      <div class="field"><label>Tarikh</label><input id="date" type="date"></div>
+      <div class="field full"><label>Lokasi / alamat</label><input id="location" placeholder="Lokasi projek"></div>
+      <div class="field full"><label>No. telefon</label><input id="phone" type="tel" placeholder="No. telefon"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1. Tabletop</h2>
+    <div class="grid" style="grid-template-columns:1.35fr 1fr;align-items:end">
+      <div class="field"><label>Jenis tabletop</label>
+        <select id="topRate">
+          <option value="0">SEDIA ADA</option>
+          <option value="300" selected>KONKRIT + TILE</option>
+          <option value="400">ALUM BODY + QUARTZ STONE</option>
+        </select>
+      </div>
+      <div class="field"><label>Ukuran <span class="unit">(inci)</span></label><input id="topLength" type="number" inputmode="decimal" value="120" min="0"></div>
+    </div>
+    <p class="smallnote">Pengiraan automatik: ukuran dalam inci ÷ 12 × kadar pilihan (RM/kaki). SEDIA ADA dikira RM0.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Set Pintu Sahaja</h2>
+    <div class="grid">
+      <div class="field"><label>Panjang set pintu <span class="unit">(foot run)</span></label><input id="doorOnly" type="number" inputmode="decimal" value="0" min="0"></div>
+      <div class="field"><label>Kadar harga mengikut material</label><div class="smallnote" style="margin:0;line-height:1.7">ACP RM140 / foot run<br>3G RM170 / foot run<br>4G RM220 / foot run<br>Euro RM240 / foot run</div></div>
+    </div>
+    <p class="smallnote">Masukkan jumlah panjang pintu dalam foot run. Nilai ini akan didarab dengan kadar material dan ditambah secara automatik kepada harga setiap set.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Wall Cabinet</h2>
+    <div class="measure">
+      <div class="field"><label>Depth <span class="unit">inci</span></label><input id="wallD" type="number" inputmode="decimal" value="13" min="0"></div>
+      <div class="field"><label>Height <span class="unit">inci</span></label><input id="wallH" type="number" inputmode="decimal" value="30" min="0"></div>
+      <div class="field"><label>Length <span class="unit">inci</span></label><input id="wallL" type="number" inputmode="decimal" value="120" min="0"></div>
+    </div>
+    <p class="smallnote">Keluasan harga dikira berdasarkan Height × Length ÷ 144.</p>
+  </section>
+
+  <section class="card">
+    <h2>4. Tall Cabinet</h2>
+    <div class="measure">
+      <div class="field"><label>Depth <span class="unit">inci</span></label><input id="tallD" type="number" inputmode="decimal" value="24" min="0"></div>
+      <div class="field"><label>Height <span class="unit">inci</span></label><input id="tallH" type="number" inputmode="decimal" value="96" min="0"></div>
+      <div class="field"><label>Length <span class="unit">inci</span></label><input id="tallL" type="number" inputmode="decimal" value="120" min="0"></div>
+    </div>
+    <p class="smallnote">Keluasan harga dikira berdasarkan Height × Length ÷ 144.</p>
+  </section>
+
+  <section class="card">
+    <h2>5. Counter Bar / Island</h2>
+    <div class="measure">
+      <div class="field"><label>Depth <span class="unit">inci</span></label><input id="islandD" type="number" inputmode="decimal" value="36" min="0"></div>
+      <div class="field"><label>Height <span class="unit">inci</span></label><input id="islandH" type="number" inputmode="decimal" value="40" min="0"></div>
+      <div class="field"><label>Length <span class="unit">inci</span></label><input id="islandL" type="number" inputmode="decimal" value="60" min="0"></div>
+    </div>
+    <p class="smallnote">Mengikut formula Excel asal, keluasan Counter Bar / Island dikira berdasarkan Depth × Length ÷ 144.</p>
+  </section>
+
+  <section class="card">
+    <h2>6. Accessories / Other</h2>
+    <div class="acc-head">
+      <span>Item</span>
+      <span style="text-align:right">Qty</span>
+      <span style="text-align:right">Price (RM)</span>
+      <span></span>
+    </div>
+    <div id="accList"></div>
+    <button type="button" class="add-item-btn" id="addItemBtn">+ Add item</button>
+    <p class="smallnote">Masukkan nama item, kuantiti dan harga seunit (RM). Jumlah dikira automatik (Qty × Price).</p>
+  </section>
+
+  <section class="card">
+    <h2>7. Anggaran harga mengikut material</h2>
+    <div class="results" aria-live="polite">
+      <div class="result"><div class="name">ACP SET</div><div class="price" id="priceACP">RM 0.00</div><div class="desc">Wall RM96/sqft · Tall RM62.50/sqft · Pintu RM140/ft run</div></div>
+      <div class="result"><div class="name">3G SET</div><div class="price" id="price3G">RM 0.00</div><div class="desc">Wall RM108/sqft · Tall RM68.75/sqft · Pintu RM170/ft run</div></div>
+      <div class="result"><div class="name">4G SET</div><div class="price" id="price4G">RM 0.00</div><div class="desc">Wall RM128/sqft · Tall RM75/sqft · Pintu RM220/ft run</div></div>
+      <div class="result"><div class="name">EURO SET</div><div class="price" id="priceEuro">RM 0.00</div><div class="desc">Wall RM136/sqft · Tall RM81.25/sqft · Pintu RM240/ft run</div></div>
+    </div>
+    <div class="ratebox">
+      <div class="total-label">Ringkasan ukuran</div>
+      <div id="areaSummary" class="smallnote">Wall: 25.00 sqft · Tall: 80.00 sqft · Island: 15.00 sqft</div>
+    </div>
+    <div class="actions">
+      <button type="button" class="secondary" id="copyBtn">Salin ringkasan</button>
+      <button type="button" class="secondary" id="resetBtn">Reset ukuran</button>
+    </div>
+  </section>
+  <div class="footer">CAIN ALUMINIUM · 011-6387 9336<br>Harga anggaran berdasarkan kadar yang dimasukkan dalam fail Excel asal.</div>
+</main>
+<script>
+const STORAGE_KEY = 'cain_price_calc_v4_ios';
+const numIds = ['topLength','topRate','doorOnly','wallD','wallH','wallL','tallD','tallH','tallL','islandD','islandH','islandL'];
+const textIds = ['customer','date','location','phone'];
+const defaults = {topLength:120,topRate:300,doorOnly:0,wallD:13,wallH:30,wallL:120,tallD:24,tallH:96,tallL:120,islandD:36,islandH:40,islandL:60};
+const n = id => Math.max(0, Number(document.getElementById(id).value) || 0);
+const money = v => 'RM ' + v.toLocaleString('en-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+let accessories = [{name:'', qty:'1', price:''}];
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function renderAccessories() {
+  const list = document.getElementById('accList');
+  list.innerHTML = accessories.map((item, i) => `
+    <div class="acc-row">
+      <input type="text" placeholder="Nama item" value="${esc(item.name)}" data-idx="${i}" data-field="name">
+      <input type="number" class="num" inputmode="numeric" min="0" placeholder="1" value="${esc(item.qty)}" data-idx="${i}" data-field="qty">
+      <input type="number" class="num" inputmode="decimal" min="0" step="any" placeholder="0.00" value="${esc(item.price)}" data-idx="${i}" data-field="price">
+      <button type="button" class="del-btn" data-del="${i}" aria-label="Buang item">×</button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const idx = Number(e.target.dataset.idx);
+      const field = e.target.dataset.field;
+      accessories[idx][field] = e.target.value;
+      calculate();
+    });
+  });
+
+  list.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = Number(e.currentTarget.dataset.del);
+      if (accessories.length > 1) {
+        accessories.splice(idx, 1);
+      } else {
+        accessories = [{name:'', qty:'1', price:''}];
+      }
+      renderAccessories();
+      calculate();
+    });
+  });
+}
+
+function saveState() {
+  try {
+    const data = {accessories};
+    [...numIds, ...textIds].forEach(id => { data[id] = document.getElementById(id).value; });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {}
+}
+
+function loadState() {
+  document.getElementById('date').value = new Date().toISOString().slice(0, 10);
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved) {
+      [...numIds, ...textIds].forEach(id => {
+        if (saved[id] !== undefined) document.getElementById(id).value = saved[id];
+      });
+      if (Array.isArray(saved.accessories) && saved.accessories.length) {
+        accessories = saved.accessories;
+      }
+    }
+  } catch (e) {}
+  if (document.getElementById('topRate').value === '0') {
+    document.getElementById('topLength').value = 0;
+  }
+}
+
+function handleTopRateChange() {
+  const rate = document.getElementById('topRate').value;
+  const lenInput = document.getElementById('topLength');
+  if (rate === '0') {
+    lenInput.value = 0;
+  } else if (Number(lenInput.value) === 0) {
+    lenInput.value = 120;
+  }
+  calculate();
+}
+
+function calculate() {
+  const wall = n('wallH') * n('wallL') / 144;
+  const tall = n('tallH') * n('tallL') / 144;
+  const island = n('islandD') * n('islandL') / 144;
+  const topRate = n('topRate');
+  const islandRate = topRate === 0 ? 0 : topRate === 300 ? 100 : 200;
+  const tabletop = (n('topLength') / 12) * topRate;
+  const doorRun = n('doorOnly');
+  const islandCost = island * islandRate;
+  const extras = accessories.reduce((sum, item) => {
+    const q = Math.max(0, Number(item.qty) || 0);
+    const p = Math.max(0, Number(item.price) || 0);
+    return sum + (q * p);
+  }, 0);
+  const common = tabletop + islandCost + extras;
+  const prices = [
+    common + wall * 96 + tall * 62.5 + doorRun * 140,
+    common + wall * 108 + tall * 68.75 + doorRun * 170,
+    common + wall * 128 + tall * 75 + doorRun * 220,
+    common + wall * 136 + tall * 81.25 + doorRun * 240
+  ];
+  ['priceACP','price3G','price4G','priceEuro'].forEach((id, i) => {
+    document.getElementById(id).textContent = money(prices[i]);
+  });
+  document.getElementById('areaSummary').textContent =
+    `Wall: ${wall.toFixed(2)} sqft · Tall: ${tall.toFixed(2)} sqft · Island: ${island.toFixed(2)} sqft · Tabletop: ${money(tabletop)} · Set pintu: ${doorRun.toFixed(2)} ft run · Accessories: ${money(extras)}`;
+  window.lastCalc = {prices, wall, tall, island, tabletop, extras, doorRun};
+  saveState();
+}
+
+function fallbackCopy(t) {
+  const x = document.createElement('textarea');
+  x.value = t;
+  document.body.appendChild(x);
+  x.select();
+  document.execCommand('copy');
+  x.remove();
+  alert('Ringkasan harga telah disalin.');
+}
+
+function copySummary() {
+  calculate();
+  const names = ['ACP SET','3G SET','4G SET','EURO SET'];
+  const customer = document.getElementById('customer').value || '-';
+  const date = document.getElementById('date').value || '-';
+  const loc = document.getElementById('location').value || '-';
+  const phone = document.getElementById('phone').value || '-';
+  const validAcc = accessories.filter(a => (a.name && a.name.trim()) || (Number(a.price) || 0) > 0);
+  const accLines = validAcc.length
+    ? '
+
+Accessories / Other:
+' + validAcc.map(a => {
+        const q = Math.max(0, Number(a.qty) || 0);
+        const p = Math.max(0, Number(a.price) || 0);
+        return `- ${a.name || 'Item'} (${q} × ${money(p)}): ${money(q * p)}`;
+      }).join('
+')
+    : '';
+
+  const textOut = `CAIN ALUMINIUM — ANGGARAN HARGA
+Nama: ${customer}
+Tarikh: ${date}
+Lokasi: ${loc}
+Telefon: ${phone}
+
+${names.map((x, i) => x + ': ' + money(window.lastCalc.prices[i])).join('
+')}${accLines}
+
+Ukuran keluasan: Wall ${window.lastCalc.wall.toFixed(2)} sqft; Tall ${window.lastCalc.tall.toFixed(2)} sqft; Island ${window.lastCalc.island.toFixed(2)} sqft; Set pintu ${window.lastCalc.doorRun.toFixed(2)} ft run.
+
+Harga anggaran tertakluk kepada ukuran tapak, design dan pilihan material.`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textOut).then(() => alert('Ringkasan harga telah disalin.')).catch(() => fallbackCopy(textOut));
+  } else {
+    fallbackCopy(textOut);
+  }
+}
+
+function resetForm() {
+  if (!confirm('Reset semua ukuran kepada nilai asal?')) return;
+  numIds.forEach(id => { document.getElementById(id).value = defaults[id]; });
+  accessories = [{name:'', qty:'1', price:''}];
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  renderAccessories();
+  calculate();
+}
+
+document.getElementById('topRate').addEventListener('change', handleTopRateChange);
+numIds.filter(id => id !== 'topRate').forEach(id => {
+  document.getElementById(id).addEventListener('input', calculate);
+  document.getElementById(id).addEventListener('change', calculate);
+});
+textIds.forEach(id => {
+  document.getElementById(id).addEventListener('input', saveState);
+  document.getElementById(id).addEventListener('change', saveState);
+});
+document.getElementById('addItemBtn').addEventListener('click', () => {
+  accessories.push({name:'', qty:'1', price:''});
+  renderAccessories();
+  calculate();
+});
+document.getElementById('copyBtn').addEventListener('click', copySummary);
+document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+loadState();
+renderAccessories();
+calculate();
+</script>
+</body>
+</html>
